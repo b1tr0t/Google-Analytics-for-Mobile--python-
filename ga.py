@@ -11,7 +11,7 @@ from urllib import unquote_plus, quote_plus
 from Cookie import SimpleCookie, CookieError
 from messaging import stdMsg, dbgMsg, errMsg, setDebugging
 import uuid
-setDebugging(1)
+# setDebugging(0)
 
 try:
     # The mod_python version is more efficient, so try importing it first.
@@ -132,8 +132,6 @@ def track_page_view(environ):
     // makes a server side request to Google Analytics and writes the transparent
     // gif byte data to the response.
     """    
-    dbgMsg("environ: " + str(environ))
-
     time_tup = time.localtime(time.time() + COOKIE_USER_PERSISTENCE)
     
     # set some useful items in environ: 
@@ -143,11 +141,7 @@ def track_page_view(environ):
         environ['GET'][key] = value # we only have one value per key name, right? :) 
     
     domain = environ.get('HTTP_HOST', '')
-    
-    dbgMsg("environ['COOKIES']: " + str(environ['COOKIES']))
-    dbgMsg("environ['GET']: " + str(environ['GET']))    
-    dbgMsg("domain: " + domain)    
-        
+            
     # Get the referrer from the utmr parameter, this is the referrer to the
     # page that contains the tracking pixel, not the referrer for tracking
     # pixel.    
@@ -157,24 +151,17 @@ def track_page_view(environ):
     else:
         document_referer = unquote_plus(document_referer)
 
-    dbgMsg("document_referer: " + document_referer)    
-        
     document_path = environ['GET'].get('utmp', "")
     if document_path:
         document_path = unquote_plus(document_path)
-    dbgMsg("document_path: " + document_path)        
 
     account = environ['GET'].get('utmac', '')      
-    dbgMsg("account: " + account)    
     user_agent = environ.get("HTTP_USER_AGENT", '')    
-    dbgMsg("user_agent: " + user_agent)    
 
     # // Try and get visitor cookie from the request.
     cookie = environ['COOKIES'].get(COOKIE_NAME)
-    dbgMsg("cookie: " + str(cookie))    
 
     visitor_id = get_visitor_id(environ.get("HTTP_X_DCMGUID", ''), account, user_agent, cookie)
-    dbgMsg("visitor_id: " + visitor_id)    
     
     # // Always try and add the cookie to the response.
     cookie = SimpleCookie()
@@ -211,5 +198,4 @@ def track_page_view(environ):
     response = write_gif_data()
     response_headers = response['response_headers']
     response_headers.extend(headers)
-    dbgMsg("response: " + str(response))        
     return response

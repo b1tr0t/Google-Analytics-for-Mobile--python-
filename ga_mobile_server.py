@@ -25,7 +25,7 @@ except:
     pass
 
 from messaging import stdMsg, dbgMsg, errMsg, setDebugging
-# setDebugging(1)
+setDebugging(0)
 
 MINSPARE = 3
 MAXSPARE = 7
