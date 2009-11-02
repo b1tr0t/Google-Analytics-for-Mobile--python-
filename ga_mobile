@@ -1,0 +1,97 @@
+#! /bin/bash
+# set -x
+### BEGIN INIT INFO
+# Provides:          GA Mobile FastCGI server using FLUP providing Google analytics transparent GIF 
+# Required-Start:    networking
+# Required-Stop:     networking
+# Default-Start:     2 3 4 5
+# Default-Stop:      S 0 1 6
+# Short-Description: Google analytics mobile
+# Description:  GA Mobile FastCGI server using FLUP providing Google analytics mobile.  Make sure the user specified 
+#               in 'RUN_AS' can WRITE to the directories specified for: PIDFILE,LOGDIR,PYTHON_EGG_CACHE
+#                    
+#                    
+### END INIT INFO
+#
+# Author:  Peter McLachlan
+#          <peter@mobify.me>.
+#
+
+#### SERVER SPECIFIC CONFIGURATION
+SERVER_ROOT="/services/ga_mobile"
+HOST=`hostname`-i
+PORT=8009
+RUN_AS=www-data
+PIDFILE=$SERVER_ROOT/pid/ga_mobile.pid
+LOGDIR=$SERVER_ROOT/logs
+STDOUTLOG=$LOGDIR/ga_mobile_serv.log
+STDERRLOG=$LOGDIR/ga_mobile_serv.err.log
+MAXREQUESTS=30
+MINSPARE=4
+MAXSPARE=10
+MAXCHILDREN=20
+
+export PYTHON_EGG_CACHE=$SERVER_ROOT/cache
+
+#### You shouldn't need to mess with stuff after this line
+EXEC=$SERVER_ROOT/ga_mobile_server.py
+
+set -e
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DESC="GA Mobile FastCGI servers"
+NAME=$0
+SCRIPTNAME=/etc/init.d/$NAME
+
+SERVER=$2
+#
+#       Function that starts the daemon/service.
+#
+d_start()
+{
+	echo -n "Google Mobile GIF Server : $HOST:$PORT"
+	if [[ -n `ps aux | grep manage.py | grep port=$PORT | head -1` ]]; then
+		echo -n " already running"
+	else
+		su - www-data -c "$EXEC --host $HOST --port $PORT --pidfile $PIDFILE --maxchildren $MAXCHILDREN --maxrequests $MAXREQUESTS --minspare $MINSPARE --maxspare $MAXSPARE 2>$STDERRLOG >$STDOUTLOG &"
+	fi
+}
+
+#
+#       Function that stops the daemon/service.
+#
+d_stop() {
+	PID=`cat $PIDFILE | tr -d "\n"` 
+	echo "-- Killing Google Analytics FastCGI, PID: $PID"
+	kill $PID
+}
+
+ACTION="$1"
+case "$ACTION" in
+    start)
+        echo "Starting $DESC: $NAME"
+        d_start
+        echo "."
+        ;;
+
+    stop)
+        echo "Stopping $DESC: $NAME"
+        d_stop
+        echo "."
+        ;;
+
+    restart|force-reload)
+        echo "Restarting $DESC: $NAME"
+        d_stop
+        sleep 5
+        d_start
+        echo "-- DONE"
+        ;;
+    *)
+        echo "Usage: $NAME {start|stop|restart|force-reload}" >&2
+        exit 3
+        ;;
+esac
+
+
+exit 0
