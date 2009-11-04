@@ -7,11 +7,10 @@ from random import randint
 import struct
 import httplib2
 import time
-from urllib import unquote_plus, quote_plus
+from urllib import unquote, quote
 from Cookie import SimpleCookie, CookieError
 from messaging import stdMsg, dbgMsg, errMsg, setDebugging
 import uuid
-# setDebugging(0)
 
 try:
     # The mod_python version is more efficient, so try importing it first.
@@ -33,7 +32,7 @@ GIF_DATA = reduce(lambda x,y: x + struct.pack('B', y),
                    0x02,0x44,0x01,0x00,0x3b], '')
 
 def get_ip(remote_address):
-    dbgMsg("remote_address: " + str(remote_address))
+    # dbgMsg("remote_address: " + str(remote_address))
     if not remote_address:
         return ""
     matches = re.match('^([^.]+\.[^.]+\.[^.]+\.).*', remote_address)
@@ -103,7 +102,7 @@ def send_request_to_google_analytics(utm_url, environ):
                                      )
         dbgMsg("success")            
     except HttpLib2Error, e:
-        dbgMsg("fail")            
+        errMsg("fail: %s" % utm_url)            
         if environ['GET'].get('utmdebug'):
             raise Exception("Error opening: %s" % utm_url)
         else:
@@ -139,6 +138,7 @@ def track_page_view(environ):
     environ['GET'] = {}
     for key, value in parse_qsl(environ.get('QUERY_STRING', ''), True):
         environ['GET'][key] = value # we only have one value per key name, right? :) 
+    x_utmac = environ['GET'].get('x_utmac', None)
     
     domain = environ.get('HTTP_HOST', '')
             
@@ -149,11 +149,11 @@ def track_page_view(environ):
     if not document_referer or document_referer == "0":
         document_referer = "-"
     else:
-        document_referer = unquote_plus(document_referer)
+        document_referer = unquote(document_referer)
 
     document_path = environ['GET'].get('utmp', "")
     if document_path:
-        document_path = unquote_plus(document_path)
+        document_path = unquote(document_path)
 
     account = environ['GET'].get('utmac', '')      
     user_agent = environ.get("HTTP_USER_AGENT", '')    
@@ -172,21 +172,24 @@ def track_page_view(environ):
 
     utm_gif_location = "http://www.google-analytics.com/__utm.gif"
 
-    # // Construct the gif hit url.
-    utm_url = utm_gif_location + "?" + \
-            "utmwv=" + VERSION + \
-            "&utmn=" + get_random_number() + \
-            "&utmhn=" + quote_plus(domain) + \
-            "&utmr=" + quote_plus(document_referer) + \
-            "&utmp=" + quote_plus(document_path) + \
-            "&utmac=" + account + \
-            "&utmcc=__utma%3D999.999.999.999.999.1%3B" + \
-            "&utmvid=" + visitor_id + \
-            "&utmip=" + get_ip(environ.get("REMOTE_ADDR",''))
-
-    dbgMsg("utm_url: " + utm_url)    
-
-    send_request_to_google_analytics(utm_url, environ)
+    for utmac in [account, x_utmac]:
+        if not utmac:
+            continue # ignore empty utmacs
+        # // Construct the gif hit url.
+        utm_url = utm_gif_location + "?" + \
+                "utmwv=" + VERSION + \
+                "&utmn=" + get_random_number() + \
+                "&utmhn=" + quote(domain) + \
+                "&utmsr=" + environ['GET'].get('utmsr', '') + \
+                "&utme=" + environ['GET'].get('utme', '') + \
+                "&utmr=" + quote(document_referer) + \
+                "&utmp=" + quote(document_path) + \
+                "&utmac=" + utmac + \
+                "&utmcc=__utma%3D999.999.999.999.999.1%3B" + \
+                "&utmvid=" + visitor_id + \
+                "&utmip=" + get_ip(environ.get("REMOTE_ADDR",''))
+        dbgMsg("utm_url: " + utm_url)    
+        send_request_to_google_analytics(utm_url, environ)
 
     # // If the debug parameter is on, add a header to the response that contains
     # // the url that was used to contact Google Analytics.

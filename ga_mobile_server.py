@@ -12,20 +12,14 @@ Copyright (c) 2009 Mobify. All rights reserved.
 import sys
 import os
 import getopt
-import cgi
 from urlparse import urlparse
 from flup.server.fcgi_fork import WSGIServer
-from django.core.mail import send_mail
 from socket import gethostname
 from datetime import datetime, timedelta
 from ga import track_page_view
-try:
-    import wingdbstub
-except:
-    pass
 
 from messaging import stdMsg, dbgMsg, errMsg, setDebugging
-setDebugging(0)
+setDebugging(1)
 
 MINSPARE = 3
 MAXSPARE = 7
