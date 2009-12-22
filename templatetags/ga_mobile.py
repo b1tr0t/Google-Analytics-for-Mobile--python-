@@ -39,4 +39,4 @@ def ga_mobile(request):
         "&utmp=" + path + \
         "&guid=ON"
 
-    return '<img src="%s" / width="1" height="1">' % src
+    return '<img src="%s" width="1" height="1">' % src
