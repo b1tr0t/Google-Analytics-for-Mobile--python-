@@ -94,13 +94,13 @@ def write_gif_data():
       'response_body': 'binary data'
     }
     """
-    response = {'response_code': '200 OK', 
+    response = {'response_code': '204 No Content', 
                 'response_headers': [('Content-Type', 'image/gif'),                                     
                                      ('Cache-Control', 'private, no-cache, no-cache=Set-Cookie, proxy-revalidate'),
                                      ('Pragma', 'no-cache'),
                                      ('Expires', 'Wed, 17 Sep 1975 21:32:10 GMT'),
                                      ],
-                'response_body': GIF_DATA,
+                # 'response_body': GIF_DATA,
                 }
     return response
 
