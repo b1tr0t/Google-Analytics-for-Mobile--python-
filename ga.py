@@ -101,6 +101,7 @@ def write_gif_data():
                                      ('Expires', 'Wed, 17 Sep 1975 21:32:10 GMT'),
                                      ],
                 # 'response_body': GIF_DATA,
+                'response_body': '',
                 }
     return response
 
