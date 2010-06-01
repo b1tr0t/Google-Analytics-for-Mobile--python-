@@ -119,7 +119,7 @@ def send_request_to_google_analytics(utm_url, environ):
                                      headers={'User-Agent': environ.get('HTTP_USER_AGENT', 'Unknown'),
                                               'Accepts-Language:': environ.get("HTTP_ACCEPT_LANGUAGE",'')}
                                      )
-        dbgMsg("success")            
+        # dbgMsg("success")            
     except HttpLib2Error, e:
         errMsg("fail: %s" % utm_url)            
         if environ['GET'].get('utmdebug'):
@@ -207,7 +207,7 @@ def track_page_view(environ):
                 "&utmcc=__utma%3D999.999.999.999.999.1%3B" + \
                 "&utmvid=" + visitor_id + \
                 "&utmip=" + get_ip(environ.get("REMOTE_ADDR",''))
-        dbgMsg("utm_url: " + utm_url)    
+        # dbgMsg("utm_url: " + utm_url)    
         send_request_to_google_analytics(utm_url, environ)
 
     # // If the debug parameter is on, add a header to the response that contains
