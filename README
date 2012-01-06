@@ -5,3 +5,5 @@ This package includes:
 2) A FLUP based FastCGI implementation in ga_mobile_server.py.  Set up nginx or Apache to call this
 
 3) A startup script for the FLUP server in ga_mobile.  
+
+4) A django app with a template tag you can use on your django site.
