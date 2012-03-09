@@ -5,3 +5,15 @@ This package includes:
 2) A FLUP based FastCGI implementation in ga_mobile_server.py.  Set up nginx or Apache to call this
 
 3) A startup script for the FLUP server in ga_mobile.  
+
+4) A django app with a template tag you can use on your django site.
+
+The Django app uses 2 django settings:
+
+    ``GA_MOBILE_PATH`` path (including leading /) to location of your tracking CGI.
+    ``GA_MOBILE_ACCOUNT``: your GA mobile account number such as MO-XXXXXX-XX
+
+To use the django app:
+	add ga_app to your INSTALLED_SETTINGS
+	add a url to ga_app.urls:
+	(r'^ga/', include('ga_app.urls')),

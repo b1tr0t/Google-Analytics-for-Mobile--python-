@@ -22,7 +22,7 @@ def ga_mobile(request):
     """
 
     ga_mobile_path = settings.GA_MOBILE_PATH
-    ga_mobile_account = settings.GA_MOBILE_ACCOUNT    
+    ga_mobile_account = settings.GA_MOBILE_ACCOUNT
     r = str(randint(0, 0x7fffffff))
 
     if hasattr(settings, 'GA_MOBILE_HOST'):

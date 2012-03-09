@@ -120,7 +120,7 @@ def send_request_to_google_analytics(utm_url, environ):
                                               'Accepts-Language:': environ.get("HTTP_ACCEPT_LANGUAGE",'')}
                                      )
         # dbgMsg("success")            
-    except HttpLib2Error, e:
+    except httplib2.HttpLib2Error, e:
         errMsg("fail: %s" % utm_url)            
         if environ['GET'].get('utmdebug'):
             raise Exception("Error opening: %s" % utm_url)
