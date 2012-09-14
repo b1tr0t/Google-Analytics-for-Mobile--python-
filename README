@@ -1,8 +1,10 @@
+This project is licensed under the MIT open source license.  See the LICENSE file for more details.
+
 This package includes:
 
-1) A direct translation of ga.py to ga.php.  You can probably integrate this into your own setup by importing 'track_page_view' and providing it with the appropriate WSGI request environment.  (From Django, you could probably pass in request.META directly, for example...)
+1) A direct translation of the Google Analytics for Mobile PHP file ga.php to Python (ga.py).  You can probably integrate this into your own setup by importing 'track_page_view' and providing it with the appropriate WSGI request environment.  (From Django, you could probably pass in request.META directly, for example.)
 
-2) A FLUP based FastCGI implementation in ga_mobile_server.py.  Set up nginx or Apache to call this
+2) A FLUP based FastCGI implementation in ga_mobile_server.py.  Set up nginx or Apache to call this.
 
 3) A startup script for the FLUP server in ga_mobile.  
 
